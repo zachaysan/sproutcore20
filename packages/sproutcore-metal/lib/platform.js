@@ -3,7 +3,7 @@
 // Copyright: ©2011 Strobe Inc. and contributors.
 // License:   Licensed under MIT license (see license.js)
 // ==========================================================================
-/*globals sc_assert */
+/*globals sc_assert Node */
 
 require('sproutcore-metal/core');
 
@@ -20,6 +20,7 @@ var platform = SC.platform = {} ;
 platform.create = Object.create;
 
 if (!platform.create) {
+  /** @private */
   var O_ctor = function() {},
       O_proto = O_ctor.prototype;
 
