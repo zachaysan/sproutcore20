@@ -46,9 +46,12 @@ var setup = Dc.setup = function(obj, keyName, value) {
   SIMPLE_DESC.value = null;
 };
 
+/** @private */
 var Dp = SC.Descriptor.prototype;
 
 /**
+  @private
+
   Called whenever we want to set the property value.  Should set the value 
   and return the actual set value (which is usually the same but may be 
   different in the case of computed properties.)
@@ -70,6 +73,8 @@ Dp.set = function(obj, keyName, value) {
 };
 
 /**
+  @private
+
   Called whenever we want to get the property value.  Should retrieve the 
   current value.
   
@@ -86,6 +91,8 @@ Dp.get = function(obj, keyName) {
 };
 
 /**
+  @private
+
   This is called on the descriptor to set it up on the object.  The 
   descriptor is responsible for actually defining the property on the object
   here.
@@ -107,6 +114,8 @@ Dp.get = function(obj, keyName) {
 Dp.setup = setup;
 
 /**
+  @private
+
   This is called on the descriptor just before another descriptor takes its
   place.  This method should at least return the 'transfer value' of the 
   property - which is the value you want to passed as the input to the new
@@ -127,6 +136,9 @@ Dp.teardown = function(obj, keyName) {
   return obj[keyName];
 };
 
+/**
+  @private
+*/
 Dp.val = function(obj, keyName) {
   return obj[keyName];
 };
@@ -140,10 +152,12 @@ Dp.val = function(obj, keyName) {
 // if you do foo.bar instead of SC.get(foo, 'bar')
 
 if (!USE_ACCESSORS) {
+  /** @private */
   SC.Descriptor.MUST_USE_GETTER = function() {
     sc_assert('Must use SC.get() to access this property', false);
   };
 
+  /** @private */
   SC.Descriptor.MUST_USE_SETTER = function() {
     if (this.isDestroyed) {
       sc_assert('You cannot set observed properties on destroyed objects', false);
@@ -202,17 +216,21 @@ function mkWatchedSetter(keyName) {
 }
 
 /**
-  @private 
+  @ignore
   
   Private version of simple property that invokes property change callbacks.
 */
 WATCHED_PROPERTY = new SC.Descriptor();
 
 if (SC.platform.hasPropertyAccessors) {
+  /** @private */
   WATCHED_PROPERTY.get = w_get ;
+
+  /** @private */
   WATCHED_PROPERTY.set = w_set ;
 
   if (USE_ACCESSORS) {
+    /** @private */
     WATCHED_PROPERTY.setup = function(obj, keyName, value) {
       WATCHED_DESC.get = mkWatchedGetter(keyName);
       WATCHED_DESC.set = mkWatchedSetter(keyName);
@@ -222,6 +240,7 @@ if (SC.platform.hasPropertyAccessors) {
     };
 
   } else {
+    /** @private */
     WATCHED_PROPERTY.setup = function(obj, keyName, value) {
       WATCHED_DESC.get = mkWatchedGetter(keyName);
       o_defineProperty(obj, keyName, WATCHED_DESC);
@@ -230,6 +249,7 @@ if (SC.platform.hasPropertyAccessors) {
     };
   }
 
+  /** @private */
   WATCHED_PROPERTY.teardown = function(obj, keyName) {
     var ret = meta(obj).values[keyName];
     delete meta(obj).values[keyName];
@@ -240,6 +260,7 @@ if (SC.platform.hasPropertyAccessors) {
 // set values and hope for the best.  You just won't get any warnings...
 } else {
   
+  /** @private */
   WATCHED_PROPERTY.set = function(obj, keyName, value) {
     var m = meta(obj), watching;
 
