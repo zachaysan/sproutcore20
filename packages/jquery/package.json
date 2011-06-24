@@ -5,5 +5,6 @@
   "homepage": "http://jquery.com",
   "author": "jQuery Team",
   "version": "1.6",
-  "directories": { "lib": "lib" }
+  "directories": { "lib": "lib" },
+  "main": "./lib/jquery"
 }

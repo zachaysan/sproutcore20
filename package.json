@@ -4,10 +4,10 @@
   "summary": "SproutCore 2.0 Bootstrap",
   "homepage": "http://github.com/sproutcore/sproutcore20",
   "author": "Charles Jolley",
-  "version": "2.0",
+  "version": "2.0.1",
   "dependencies": {
     "qunit": "1.0",
-    "sproutcore": "2.0"
+    "sproutcore": "2.0.1"
   },
   "directories": {
     "docs": "docs",

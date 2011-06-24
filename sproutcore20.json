@@ -1,0 +1,17 @@
+{
+  "directories": {
+    "docs": "docs",
+    "generators": "generators"
+  },
+  "name": "amber",
+  "version": "2.0.1",
+  "description": "SproutCore 2.0 Bootstrap",
+  "author": "Charles Jolley",
+  "homepage": "http://github.com/sproutcore/sproutcore20",
+  "summary": "SproutCore 2.0 Bootstrap",
+  "bpm": "0.1.0",
+  "dependencies": {
+    "qunit": "1.0",
+    "sproutcore": "2.0.1"
+  }
+}

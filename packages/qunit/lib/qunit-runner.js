@@ -1,6 +1,5 @@
 /*globals QUnit spade */
 
-require('jquery');
 var qunit = require('./qunit');
 
 var packageName = location.search.match(/package=([^&]+)&?/);

@@ -6,7 +6,9 @@
   "author": "qUnit Team",
   "version": "1.0.0",
   "dependencies": {
+    "spade": "~> 0.1.1",
     "jquery": "1.6"
   },
+  "main": "./lib/qunit",
   "directories": { "lib": "lib" }
 }
