@@ -146,9 +146,9 @@ function normalizePath(path) {
     path && path!=='');
     
   if (path==='*') return path; //special case...
-  var first = path[0];
+  var first = path.charAt(0);
   if(first==='.') return 'this'+path;
-  if (first==='*' && path[1]!=='.') return 'this.'+path.slice(1);
+  if (first==='*' && path.charAt(1)!=='.') return 'this.'+path.slice(1);
   return path;
 }
 
@@ -192,7 +192,7 @@ function normalizeTuple(target, path) {
   if (hasThis) path = path.slice(5);
   
   var idx = path.indexOf('*');
-  if (idx>0 && path[idx-1]!=='.') {
+  if (idx>0 && path.charAt(idx-1)!=='.') {
     
     // should not do lookup on a prototype object because the object isn't
     // really live yet.
@@ -251,18 +251,25 @@ SC.normalizeTuple = function(target, path) {
 SC.normalizeTuple.primitive = normalizeTuple;
 
 SC.getPath = function(root, path) {
-  var hasThis, isGlobal;
+  var hasThis, hasStar, isGlobal;
   
   if (!path && 'string'===typeof root) {
     path = root;
     root = null;
   }
 
+  hasStar = path.indexOf('*') > -1;
+
+  // If there is no root and path is a key name, return that
+  // property from the global object.
+  // E.g. getPath('SC') -> SC
+  if (root === null && !hasStar && path.indexOf('.') < 0) { return get(window, path); }
+
   // detect complicated paths and normalize them
   path = normalizePath(path);
   hasThis  = HAS_THIS.test(path);
   isGlobal = !hasThis && IS_GLOBAL.test(path);
-  if (!root || hasThis || isGlobal || path.indexOf('*')>0) {
+  if (!root || hasThis || isGlobal || hasStar) {
     var tuple = normalizeTuple(root, path);
     root = tuple[0];
     path = tuple[1];

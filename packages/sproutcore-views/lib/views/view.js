@@ -153,18 +153,24 @@ SC.View = SC.Object.extend(
     if (!template) { return; }
 
     var context = get(this, 'templateContext'),
-        options = {
-          data: {
-            view: this,
-            isRenderData: true
-          }
+        data = {
+          view: this,
+          buffer: buffer,
+          isRenderData: true
         };
 
     // The template should take care of rendering child views.
     this._didRenderChildViews = YES;
 
-    var output = template(context, options);
-    buffer.push(output);
+    // Invoke the template with the provided template context, which
+    // is the view by default. A hash of data is also passed that provides
+    // the template with access to the view and render buffer.
+    //
+    // The template should write directly to the render buffer instead
+    // of returning a string.
+    var output = template(context, { data: data });
+
+    if (output !== undefined) { buffer.push(output); }
   },
 
   /**
@@ -240,7 +246,7 @@ SC.View = SC.Object.extend(
   */
   _applyAttributeBindings: function(buffer) {
     var attributeBindings = get(this, 'attributeBindings'),
-        attributeValue, elem;
+        attributeValue, elem, type;
 
     if (!attributeBindings) { return; }
 
@@ -252,11 +258,13 @@ SC.View = SC.Object.extend(
         var currentValue = elem.attr(attribute);
         attributeValue = get(this, attribute);
 
-        if (typeof attributeValue === 'string' && attributeValue !== currentValue) {
+        type = typeof attributeValue;
+
+        if ((type === 'string' || type === 'number') && attributeValue !== currentValue) {
           elem.attr(attribute, attributeValue);
-        } else if (attributeValue && typeof attributeValue === 'boolean') {
+        } else if (attributeValue && type === 'boolean') {
           elem.attr(attribute, attribute);
-        } else {
+        } else if (attributeValue === NO) {
           elem.removeAttr(attribute);
         }
       };
@@ -266,9 +274,11 @@ SC.View = SC.Object.extend(
       // Determine the current value and add it to the render buffer
       // if necessary.
       attributeValue = get(this, attribute);
-      if (typeof attributeValue === 'string') {
+      type = typeof attributeValue;
+
+      if (type === 'string' || type === 'number') {
         buffer.attr(attribute, attributeValue);
-      } else if (attributeValue && typeof attributeValue === 'boolean') {
+      } else if (attributeValue && type === 'boolean') {
         // Apply boolean attributes in the form attribute="attribute"
         buffer.attr(attribute, attribute);
       }
@@ -663,8 +673,12 @@ SC.View = SC.Object.extend(
       passed, a default buffer, using the current view's `tagName`, will
       be used.
   */
-  renderToBuffer: function(buffer) {
-    buffer = buffer || this.renderBuffer();
+  renderToBuffer: function(parentBuffer) {
+    if (parentBuffer) {
+      var buffer = parentBuffer.begin(get(this, 'tagName'));
+    } else {
+      var buffer = this.renderBuffer();
+    }
 
     var mixins, idx, len;
 
@@ -682,6 +696,8 @@ SC.View = SC.Object.extend(
     this._didRenderChildViews = false;
 
     SC.endPropertyChanges(this);
+
+    if (parentBuffer) { buffer.end(); }
 
     return buffer;
   },
@@ -726,9 +742,7 @@ SC.View = SC.Object.extend(
   */
   renderChildViews: function(buffer) {
     this.forEachChildView(function(view) {
-      buffer = buffer.begin(get(view, 'tagName'));
       view.renderToBuffer(buffer);
-      buffer = buffer.end();
     });
 
     this._didRenderChildViews = YES;

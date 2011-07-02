@@ -8,12 +8,8 @@
   "dependencies": {
     "spade": "~> 0.1.1",
     "jquery": "1.6",
-    "sproutcore-runtime": "2.0.beta.1",
-    "sproutcore-preprocessor": "~> 0.0.2"
+    "sproutcore-runtime": "2.0"
   },
-  "plugin:preprocessors": [
-    "sproutcore-preprocessor/preprocessor"
-  ],
   "directories": {
     "lib"       : "./lib",
     "tests"     : "./tests"

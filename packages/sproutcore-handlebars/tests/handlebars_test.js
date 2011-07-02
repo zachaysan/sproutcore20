@@ -56,7 +56,15 @@ var getPath = SC.getPath, setPath = SC.setPath, get = SC.get, set = SC.set;
   If you add additional template support to SC.View, you should create a new
   file in which to test.
 */
-module("SC.View - handlebars integration");
+module("SC.View - handlebars integration", {
+  setup: function() {
+    window.TemplateTests = SC.Namespace.create();
+  },
+
+  teardown: function() {
+    window.TemplateTests = undefined;
+  }
+});
 
 test("template view should call the function of the associated template", function() {
   var view = SC.View.create({
@@ -130,7 +138,10 @@ test("should not escape HTML in triple mustaches", function() {
     output: "you need to be more <b>bold</b>"
   });
 
-  view.createElement();
+  SC.run(function() {
+    view.createElement();
+  });
+
   equals(view.$('b').length, 1, "creates an element");
 
   SC.run(function() {
@@ -193,7 +204,7 @@ test("child views can be inserted inside a bind block", function() {
   });
 
   TemplateTests.LabelView = SC.View.extend({
-    tagName: "aside",
+    tagName: "label",
     cruel: "cruel",
     world: "world?",
     content: SC.Object.create({ blah: "wot" }),
@@ -215,7 +226,7 @@ test("child views can be inserted inside a bind block", function() {
   view.createElement();
 
   ok(view.$("#hello-world:contains('Hello world!')").length, "The parent view renders its contents");
-  ok(view.$("aside:contains('Goodbye wot cruel world?')").length === 1, "The child view renders its content once");
+  ok(view.$("label").text().match(/Goodbye.*wot.*cruel.*world\?/), "The child view renders its content once");
   ok(view.$().text().match(/Hello world!.*Goodbye.*wot.*cruel.*world\?/), "parent view should appear before the child view");
 });
 
@@ -620,7 +631,7 @@ test("Template views return a no-op function if their template cannot be found",
 
 test("Template views add an elementId to child views created using the view helper", function() {
   var templates = SC.Object.create({
-    parent: SC.Handlebars.compile('<aside>{{view "TemplateTests.ChildView"}}</aside>'),
+    parent: SC.Handlebars.compile('<label>{{view "TemplateTests.ChildView"}}</label>'),
     child: SC.Handlebars.compile("I can't believe it's not butter.")
   });
 
@@ -641,7 +652,7 @@ test("Template views add an elementId to child views created using the view help
 
 test("Template views set the template of their children to a passed block", function() {
   var templates = SC.Object.create({
-    parent: SC.Handlebars.compile('<h1>{{#view "TemplateTests.NoTemplateView"}}<span>It worked!</span>{{/view}}')
+    parent: SC.Handlebars.compile('<h1>{{#view "TemplateTests.NoTemplateView"}}<span>It worked!</span>{{/view}}</h1>')
   });
 
   TemplateTests.NoTemplateView = SC.View.extend();
@@ -652,7 +663,7 @@ test("Template views set the template of their children to a passed block", func
   });
 
   view.createElement();
-  ok(view.$().html().match(/\<h1>.*\<span>.*\<\/span>.*\<\/h1>/), "renders the passed template inside the parent template");
+  ok(view.$('h1:has(span)').length === 1, "renders the passed template inside the parent template");
 });
 
 test("should pass hash arguments to the view object", function() {
@@ -736,6 +747,54 @@ test("Collection views that specify an example view class have their children be
   });
 
   ok(parentView.childViews[0].childViews[0].isCustom, "uses the example view class");
+
+  parentView.destroy();
+});
+
+test("itemViewClass works in the #collection helper", function() {
+  TemplateTests.ExampleController = SC.ArrayProxy.create({
+    content: ['alpha']
+  });
+
+  TemplateTests.ExampleItemView = SC.View.extend({
+    isAlsoCustom: true
+  });
+
+  var parentView = SC.View.create({
+    template: SC.Handlebars.compile('{{#collection contentBinding="TemplateTests.ExampleController" itemViewClass="TemplateTests.ExampleItemView"}}beta{{/collection}}')
+  });
+
+  SC.run(function() {
+    parentView.append();
+  });
+
+  ok(parentView.childViews[0].childViews[0].isAlsoCustom, "uses the example view class specified in the #collection helper");
+
+  parentView.destroy();
+});
+
+test("itemViewClass works in the #collection helper relatively", function() {
+  TemplateTests.ExampleController = SC.ArrayProxy.create({
+    content: ['alpha']
+  });
+
+  TemplateTests.ExampleItemView = SC.View.extend({
+    isAlsoCustom: true
+  });
+
+  TemplateTests.CollectionView = SC.CollectionView.extend({
+    possibleItemView: TemplateTests.ExampleItemView
+  });
+
+  var parentView = SC.View.create({
+    template: SC.Handlebars.compile('{{#collection TemplateTests.CollectionView contentBinding="TemplateTests.ExampleController" itemViewClass="possibleItemView"}}beta{{/collection}}')
+  });
+
+  SC.run(function() {
+    parentView.append();
+  });
+
+  ok(parentView.childViews[0].childViews[0].isAlsoCustom, "uses the example view class specified in the #collection helper");
 
   parentView.destroy();
 });
@@ -919,6 +978,8 @@ test("should not reset cursor position when text field receives keyUp event", fu
   });
 
   equals(view.$().caretPosition(), 5, "The keyUp event should not result in the cursor being reset due to the bindAttr observers");
+
+  view.destroy();
 });
 
 test("should be able to bind element attributes using {{bindAttr}} inside a block", function() {
@@ -964,7 +1025,7 @@ test("should be able to bind class attribute with {{bindAttr}}", function() {
 });
 
 test("should be able to bind boolean element attributes using {{bindAttr}}", function() {
-  var template = SC.Handlebars.compile('<input type="check" {{bindAttr disabled="content.isDisabled" checked="content.isChecked"}} />');
+  var template = SC.Handlebars.compile('<input type="checkbox" {{bindAttr disabled="content.isDisabled" checked="content.isChecked"}} />');
   var content = SC.Object.create({
     isDisabled: false,
     isChecked: true
@@ -1013,22 +1074,18 @@ test("should be able to add multiple classes using {{bindAttr class}}", function
   ok(!view.$('div').hasClass('is-awesome-sauce'), "removes dasherized class when property is set to false");
 });
 
-test("should use the childView's renderBuffer", function() {
-  var calledRenderBuffer = false;
-  var template = SC.Handlebars.compile('{{view TemplateTests.RenderBufferView}}')
-  
-  TemplateTests.RenderBufferView = SC.View.extend({
-    renderBuffer: function() {
-      calledRenderBuffer = true;
-      return this._super();
-    }
+test("should be able to output a property without binding", function(){
+  var template = SC.Handlebars.compile('<div>{{raw content.aRawString}}</div>');
+  var content = SC.Object.create({
+    aRawString: "No spans here, son."
   });
 
   var view = SC.View.create({
-    template: template
+    template: template,
+    content: content
   });
-  
+
   view.createElement();
-  
-  ok(calledRenderBuffer);
+
+  equals(view.$('div').html(), "No spans here, son.");
 });
