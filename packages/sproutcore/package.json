@@ -4,7 +4,7 @@
   "summary": "SproutCore - JavaScript Application Framework",
   "homepage": "http://github.com/sproutcore/sproutcore20",
   "author": "Charles Jolley",
-  "version": "2.0.1",
+  "version": "2.0.beta.1",
   "dependencies": {
     "spade": "~> 0.1.1",
     "sproutcore-runtime": "2.0.beta.1",
