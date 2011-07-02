@@ -9,12 +9,8 @@
     "spade": "~> 0.1.1",
     "sproutcore-runtime": "2.0.beta.1",
     "sproutcore-datetime": "2.0.beta.1",
-    "sproutcore-indexset": "2.0.beta.1",
-    "sproutcore-preprocessor": "~> 0.0.2"
+    "sproutcore-indexset": "2.0.beta.1"
   },
-  "plugin:preprocessors": [
-    "sproutcore-preprocessor/preprocessor"
-  ],
   "directories": {
     "lib"       : "./lib",
     "tests"     : "./tests"

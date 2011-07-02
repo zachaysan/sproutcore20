@@ -1,12 +1,12 @@
 {
   "name": "amber",
-  "description": "SproutCore 2.0 Bootstrap",
+  "description": "SproutCore 2.0.beta.1 Bootstrap",
   "summary": "SproutCore 2.0 Bootstrap",
   "homepage": "http://github.com/sproutcore/sproutcore20",
   "author": "Charles Jolley",
-  "version": "2.0.1",
+  "version": "2.0.beta.1",
   "dependencies": {
-    "sproutcore": "2.0.1"
+    "sproutcore": "2.0.beta.1"
   },
   "directories": {
     "docs": "docs",
