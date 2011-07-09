@@ -11,6 +11,9 @@
     "sproutcore-datetime": "2.0.beta.1",
     "sproutcore-indexset": "2.0.beta.1"
   },
+  "dependencies:development": {
+    "qunit": "~> 1.0.0"
+  },
   "directories": {
     "lib"       : "./lib",
     "tests"     : "./tests"

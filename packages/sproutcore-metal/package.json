@@ -8,5 +8,8 @@
   "directories": { "lib": "lib", "tests": "tests" },
   "dependencies": {
     "spade": "~> 0.1.1"
+  },
+  "dependencies:development": {
+    "qunit": "~> 1.0.0"
   }
 }
