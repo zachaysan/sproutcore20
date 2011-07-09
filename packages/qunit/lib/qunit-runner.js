@@ -12,7 +12,7 @@ if (!packageName) {
   $('#qunit-header').text('Pass package=foo on URL to test package');
 } else {
   packageName = decodeURIComponent(packageName);
-  var packages = packageName.split(','), runtime, files, file, i, j, l, len;
+  var packages = packageName.split(','), runtime, match, file, i, l;
 
   for(i=0, l=packages.length; i<l; i++) {
     require(packages[i]);
@@ -29,18 +29,14 @@ if (!packageName) {
   });
 
   for (i=0, l=packages.length; i<l; i++) {
-    runtime = spade["package"](packages[i]);
-    files = runtime.files;
-
-    for(j=0, len=files.length; j<len; j++) {
-      file = files[j];
-
-      if (file.match(/tests\/.*\.js$/)) {
-        if (!prefix || file.indexOf('tests/'+prefix)===0) {
-          require(packages[i]+"/~" + file);
-        }
+    match = packages[i]+'/~tests/'
+    for (file in spade._factories) {
+      if (file.substring(0, match.length) === match && file.match(/\.js$/)) {
+        require(file);
       }
     }
   }
 
+  QUnit.start();
+}
 
