@@ -12,7 +12,11 @@
     <ol id="qunit-tests"></ol>
     <div id="qunit-fixture">test markup, will be hidden</div>
     <!-- IE8 wants the script tag to be in the body. For more info, Google: KB927917 -->
-    <script src="spade-boot.js" data-require="qunit/qunit-runner"></script>
+    <script src="assets/bpm_packages.js"></script>
+    <script src="assets/bpm_tests.js"></script>
+    <script>
+      spade.require('qunit/qunit-runner');
+    </script>
   </body>
 </html>
 
