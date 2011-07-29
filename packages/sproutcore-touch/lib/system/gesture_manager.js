@@ -21,18 +21,21 @@ var set = SC.set;
 
   @extends SC.Object
 */
-SC.GestureManager = SC.Object.extend({
+SC.GestureManager = SC.Object.extend(
+/** @scope SC.GestureManager.prototype */ {
 
   /**
     An array containing all the gesture recognizers associated with a
     view. This is set automatically by SC.View.
 
-    @default null
     @type Array
+    @default null
   */
   gestures: null,
 
   /**
+    @private
+
     Internal hash used to keep a list of the events that need to be
     re-dispatched to the views. It's used so we don't re-dispatch
     the same event multiple times to the same view.
@@ -46,7 +49,8 @@ SC.GestureManager = SC.Object.extend({
     Relays touchStart events to all the gesture recognizers to the
     specified view
 
-    @return Boolen
+    @event
+    @returns Boolean
   */
   touchStart: function(evt, view) {
     return this._invokeEvent('touchStart',evt, view);

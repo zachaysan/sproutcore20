@@ -46,6 +46,9 @@ if (!platform.create) {
   platform.create.isSimulated = true;
 }
 
+/**
+  @private
+*/
 var defineProperty = Object.defineProperty, canRedefineProperties, canDefinePropertyOnDOM;
 
 // Catch IE8 where Object.defineProperty exists but only works on DOM elements
@@ -58,8 +61,12 @@ if (defineProperty) {
 }
 
 if (defineProperty) {
-  // Detects a bug in Android <3.2 where you cannot redefine a property using
-  // Object.defineProperty once accessors have already been set.
+  /**
+    @private
+
+    Detects a bug in Android <3.2 where you cannot redefine a property using
+    Object.defineProperty once accessors have already been set.
+  */
   canRedefineProperties = (function() {
     var obj = {};
 
@@ -80,9 +87,12 @@ if (defineProperty) {
     return obj.a === true;
   })();
 
-  // This is for Safari 5.0, which supports Object.defineProperty, but not
-  // on DOM nodes.
+  /**
+    @private
 
+    This is for Safari 5.0, which supports Object.defineProperty, but not
+    on DOM nodes.
+  */
   canDefinePropertyOnDOM = (function(){
     try {
       defineProperty(document.body, 'definePropertyOnDOM', {});

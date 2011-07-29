@@ -17,6 +17,10 @@ var normalizePath = SC.normalizePath;
 
 var suspended = 0;
 
+/**
+  @private
+  @ignore
+*/
 var ObserverSet = function(iterateable) {
   this.set = {};
   if (iterateable) { this.array = []; }
